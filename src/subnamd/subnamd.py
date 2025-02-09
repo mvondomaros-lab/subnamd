@@ -144,8 +144,7 @@ def _prep(
 ):
     """Prepare all jobs."""
 
-    # Write the submit scripts.
-    print(wall_time)
+    # Write the submit script.
     for c in configs:
         path = pathlib.Path(c)
         with open(path.with_suffix(".slurm"), "w") as f:
@@ -165,20 +164,20 @@ def _prep(
             f.write(f"namd3 +p {ncpus} +setcpuaffinity")
             if ngpus > 0:
                 f.write(" +devices ${CUDA_VISIBLE_DEVICES}")
-            f.write(f" {path.name} > {path.stem + '.out'}\n")
+            f.write(f" {path.name} > {path.with_suffix('.out').name}\n")
 
 
 def _submit(configs: Sequence[click.Path], *, after: Optional[int], chain: bool):
     """Submit all jobs."""
     for c in configs:
         path = pathlib.Path(c)
-        cmdline = ["sbatch", str(path.with_suffix(".slurm")), f"--chdir={path.parent}"]
+        cmdline = ["sbatch", str(path.with_suffix(".slurm").name)]
         if after is not None:
             cmdline += [f"--dependency=afterok:{after}"]
         print("Running: " + " ".join(cmdline))
         try:
             stdout = subprocess.run(
-                cmdline, check=True, capture_output=True
+                cmdline, check=True, capture_output=True, cwd=path.parent
             ).stdout.decode("utf-8")
             jobid = stdout.split()[-1]
             if chain:
