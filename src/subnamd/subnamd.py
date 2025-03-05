@@ -171,9 +171,10 @@ def _submit(configs: Sequence[click.Path], *, after: Optional[int], chain: bool)
     """Submit all jobs."""
     for c in configs:
         path = pathlib.Path(c)
-        cmdline = ["sbatch", str(path.with_suffix(".slurm").name)]
+        cmdline = ["sbatch"]
         if after is not None:
             cmdline += [f"--dependency=afterok:{after}"]
+        cmdline += [str(path.with_suffix(".slurm").name)]
         print("Running: " + " ".join(cmdline))
         try:
             stdout = subprocess.run(

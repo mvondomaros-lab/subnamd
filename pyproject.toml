@@ -1,7 +1,7 @@
 [project]
 name = "subnamd"
 description = "Submit NAMD jobs."
-version = "0.2.0"
+version = "0.2.1"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
